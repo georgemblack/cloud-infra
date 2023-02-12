@@ -12,9 +12,8 @@ resource "google_storage_bucket" "assets" {
   project                     = var.project
   uniform_bucket_level_access = true
 
-  labels = {
-    "managed_by" = "terraform"
-    "project"    = "web"
+  versioning {
+    enabled = true
   }
 }
 
@@ -26,7 +25,7 @@ resource "google_service_account" "transmit" {
 }
 
 resource "google_project_iam_member" "transmit" {
-  role    = "roles/storage.objectAdmin"
+  role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.transmit.email}"
   project = var.project
 }

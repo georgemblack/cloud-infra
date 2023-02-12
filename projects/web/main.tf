@@ -25,9 +25,21 @@ resource "google_service_account" "transmit" {
   project      = var.project
 }
 
+resource "google_project_iam_member" "transmit" {
+  role    = "roles/storage.objectAdmin"
+  member  = "serviceAccount:${google_service_account.transmit.email}"
+  project = var.project
+}
+
 resource "google_service_account" "codespaces" {
   account_id   = "github-codespaces"
   display_name = "GitHub Codespaces"
   description  = "Used by GitHub Codespaces for development"
   project      = var.project
+}
+
+resource "google_project_iam_member" "codespaces" {
+  role    = "roles/editor"
+  member  = "serviceAccount:${google_service_account.codespaces.email}"
+  project = var.project
 }

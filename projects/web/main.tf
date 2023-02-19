@@ -37,7 +37,7 @@ resource "google_service_account" "transmit" {
   project      = "oceanblue-web"
 }
 
-# Enable Transmit to Google Cloud Storage
+# Enable Transmit to Cloud Storage
 resource "google_project_iam_member" "transmit" {
   role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.transmit.email}"
@@ -78,5 +78,34 @@ resource "google_project_iam_member" "web_builder_secret_access" {
 resource "google_project_iam_member" "web_builder_storage_access" {
   role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.web_builder.email}"
+  project = "oceanblue-web"
+}
+
+# Service account for Web API service
+resource "google_service_account" "web_api" {
+  account_id   = "web-api"
+  display_name = "API"
+  description  = "Used by Web API Cloud Run service"
+  project      = "oceanblue-web"
+}
+
+# Enable Web API to access secrets
+resource "google_project_iam_member" "web_api_secret_access" {
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.web_api.email}"
+  project = "oceanblue-web"
+}
+
+# Enable Web API to access data in Cloud Firestore
+resource "google_project_iam_member" "web_api_firestore_access" {
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${google_service_account.web_api.email}"
+  project = "oceanblue-web"
+}
+
+# Enable Web API to invoke Web Builder
+resource "google_project_iam_member" "web_api_cloud_run_access" {
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.web_api.email}"
   project = "oceanblue-web"
 }

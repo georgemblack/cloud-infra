@@ -68,8 +68,15 @@ resource "google_service_account" "web_builder" {
 }
 
 # Enable Web Builder to access secrets
-resource "google_project_iam_member" "web_builder" {
+resource "google_project_iam_member" "web_builder_secret_access" {
   role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.web_builder.email}"
+  project = "oceanblue-web"
+}
+
+# Enable Web Builder to access assets in Cloud Storage
+resource "google_project_iam_member" "web_builder_storage_access" {
+  role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.web_builder.email}"
   project = "oceanblue-web"
 }

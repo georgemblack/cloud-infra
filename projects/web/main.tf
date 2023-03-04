@@ -6,7 +6,7 @@ terraform {
 }
 
 resource "google_storage_bucket" "assets_staging" {
-  name                        = "web-staging.george.black"
+  name                        = "web-assets-staging.george.black"
   location                    = "US"
   force_destroy               = true
   project                     = "oceanblue-web"
@@ -18,7 +18,7 @@ resource "google_storage_bucket" "assets_staging" {
 }
 
 resource "google_storage_bucket" "assets" {
-  name                        = "web.george.black"
+  name                        = "web-assets.george.black"
   location                    = "US"
   force_destroy               = true
   project                     = "oceanblue-web"
@@ -26,6 +26,32 @@ resource "google_storage_bucket" "assets" {
 
   versioning {
     enabled = true
+  }
+}
+
+resource "google_storage_bucket" "snapshots" {
+  name                        = "web-snapshots.george.black"
+  location                    = "US-SOUTH1"
+  storage_class               = "ARCHIVE"
+  force_destroy               = true
+  project                     = "oceanblue-web"
+  uniform_bucket_level_access = true
+
+  versioning {
+    enabled = false
+  }
+}
+
+resource "google_storage_bucket" "snapshots_staging" {
+  name                        = "web-snapshots-staging.george.black"
+  location                    = "US-SOUTH1"
+  storage_class               = "ARCHIVE"
+  force_destroy               = true
+  project                     = "oceanblue-web"
+  uniform_bucket_level_access = true
+
+  versioning {
+    enabled = false
   }
 }
 

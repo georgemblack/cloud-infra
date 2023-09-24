@@ -57,34 +57,6 @@ resource "google_storage_bucket" "snapshots_staging" {
   }
 }
 
-# Used to sync files from Google Cloud to Files iOS app and Finder on macOS
-resource "google_storage_bucket" "sync" {
-  name                        = "web-sync.george.black"
-  location                    = "US-SOUTH1"
-  force_destroy               = true
-  project                     = "oceanblue-web"
-  uniform_bucket_level_access = true
-
-  versioning {
-    enabled = false
-  }
-}
-
-# Service account for S3 app on macOS and iOS
-resource "google_service_account" "s3_app" {
-  account_id   = "s3-app"
-  display_name = "S3 App"
-  description  = "Used by the S3 app on macOS and iOS to sync files"
-  project      = "oceanblue-web"
-}
-
-# Enable S3 app to Cloud Storage
-resource "google_project_iam_member" "s3_app" {
-  role    = "roles/storage.admin"
-  member  = "serviceAccount:${google_service_account.s3_app.email}"
-  project = "oceanblue-web"
-}
-
 # Service account for Transmit app on the Mac
 resource "google_service_account" "transmit" {
   account_id   = "transmit"

@@ -57,18 +57,18 @@ resource "google_storage_bucket" "snapshots_staging" {
   }
 }
 
-# Service account for Transmit app on the Mac
-resource "google_service_account" "transmit" {
-  account_id   = "transmit"
-  display_name = "Transmit"
-  description  = "Used by Transmit for Mac to sync assets to Google Cloud Storage"
+# Service account for 'S3 Files' app on iOS/macOS
+resource "google_service_account" "s3_files" {
+  account_id   = "s3-files"
+  display_name = "S3 Files"
+  description  = "Used by 'S3 Files' for iOS/macOS to sync assets to Google Cloud Storage"
   project      = "oceanblue-web"
 }
 
-# Enable Transmit to Cloud Storage
-resource "google_project_iam_member" "transmit" {
+# Service account for 'S3 Files' app on iOS/macOS
+resource "google_project_iam_member" "s3_files" {
   role    = "roles/storage.admin"
-  member  = "serviceAccount:${google_service_account.transmit.email}"
+  member  = "serviceAccount:${google_service_account.s3_files.email}"
   project = "oceanblue-web"
 }
 

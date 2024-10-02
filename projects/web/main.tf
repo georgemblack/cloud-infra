@@ -57,58 +57,6 @@ resource "google_storage_bucket" "snapshots_staging" {
   }
 }
 
-# Service account for 'S3 Files' app on iOS/macOS
-resource "google_service_account" "s3_files" {
-  account_id   = "s3-files"
-  display_name = "S3 Files"
-  description  = "Used by 'S3 Files' for iOS/macOS to sync assets to Google Cloud Storage"
-  project      = "oceanblue-web"
-}
-
-# Service account for 'S3 Files' app on iOS/macOS
-resource "google_project_iam_member" "s3_files" {
-  role    = "roles/storage.admin"
-  member  = "serviceAccount:${google_service_account.s3_files.email}"
-  project = "oceanblue-web"
-}
-
-# Service account for GitHub Codespaces
-resource "google_service_account" "codespaces" {
-  account_id   = "github-codespaces"
-  display_name = "GitHub Codespaces"
-  description  = "Used by GitHub Codespaces for development"
-  project      = "oceanblue-web"
-}
-
-# Enable Codespaces general project access
-resource "google_project_iam_member" "codespaces" {
-  role    = "roles/editor"
-  member  = "serviceAccount:${google_service_account.codespaces.email}"
-  project = "oceanblue-web"
-}
-
-# Service account for Web Builder service
-resource "google_service_account" "web_builder" {
-  account_id   = "web-builder"
-  display_name = "Builder"
-  description  = "Used by Web Builder Cloud Run service"
-  project      = "oceanblue-web"
-}
-
-# Enable Web Builder to access secrets
-resource "google_project_iam_member" "web_builder_secret_access" {
-  role    = "roles/secretmanager.secretAccessor"
-  member  = "serviceAccount:${google_service_account.web_builder.email}"
-  project = "oceanblue-web"
-}
-
-# Enable Web Builder to access assets in Cloud Storage
-resource "google_project_iam_member" "web_builder_storage_access" {
-  role    = "roles/storage.admin"
-  member  = "serviceAccount:${google_service_account.web_builder.email}"
-  project = "oceanblue-web"
-}
-
 # Service account for Web API service
 resource "google_service_account" "web_api" {
   account_id   = "web-api"
@@ -127,13 +75,6 @@ resource "google_project_iam_member" "web_api_secret_access" {
 # Enable Web API to access data in Cloud Firestore
 resource "google_project_iam_member" "web_api_firestore_access" {
   role    = "roles/datastore.user"
-  member  = "serviceAccount:${google_service_account.web_api.email}"
-  project = "oceanblue-web"
-}
-
-# Enable Web API to invoke Web Builder
-resource "google_project_iam_member" "web_api_cloud_run_access" {
-  role    = "roles/run.invoker"
   member  = "serviceAccount:${google_service_account.web_api.email}"
   project = "oceanblue-web"
 }

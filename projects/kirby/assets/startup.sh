@@ -56,5 +56,5 @@ rm /tmp/$TIMESTAMP.zip
 EOF
 chmod +x /usr/local/bin/backup.sh
 
-CRON="0 * * * * /usr/local/bin/backup.sh"
+CRON="0 */2 * * * /usr/local/bin/backup.sh"
 (crontab -l | grep -F "$CRON") || (crontab -l; echo "$CRON") | crontab -

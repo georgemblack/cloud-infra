@@ -4,7 +4,7 @@
 add-apt-repository ppa:ondrej/php -y
 
 apt update
-apt install apache2 php8.3 php8.3-mbstring php8.3-curl libapache2-mod-php8.3 zip unzip -y
+apt install apache2 php8.3 php8.3-mbstring php8.3-curl php8.3-xml libapache2-mod-php8.3 zip unzip -y
 
 systemctl enable apache2
 systemctl start apache2

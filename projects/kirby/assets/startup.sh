@@ -43,7 +43,7 @@ systemctl reload apache2
 RESTORE=$(gsutil ls "gs://kirby.george.black/backups/*.zip" | sort | tail -n 1)
 gcloud storage cp $RESTORE /tmp/restore.zip
 unzip /tmp/restore.zip -d /tmp/restore
-cp -r /tmp/restore/var/www/html/* /var/www/html
+cp -r /tmp/restore/var/www/html/. /var/www/html
 rm -rf /tmp/restore /tmp/restore.zip
 chown -R www-data:www-data /var/www/html
 

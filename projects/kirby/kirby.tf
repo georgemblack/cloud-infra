@@ -176,6 +176,10 @@ resource "google_storage_bucket" "kirby_data" {
   project                     = "oceanblue-web"
   uniform_bucket_level_access = true
 
+  autoclass {
+    enabled = true
+  }
+
   versioning {
     enabled = true
   }

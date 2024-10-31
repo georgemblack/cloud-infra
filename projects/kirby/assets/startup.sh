@@ -48,8 +48,8 @@ rm -rf /tmp/restore /tmp/restore.zip
 chown -R www-data:www-data /var/www/html
 
 # Set up the cron job to backup to GCS
-cat <<EOF > "/usr/local/bin/backup.sh"
-TIMESTAMP=\$(date +"%Y-%m-%d-%H%M")
+cat << 'EOF' > "/usr/local/bin/backup.sh"
+TIMESTAMP=$(date +"%Y-%m-%d-%H%M")
 zip -r /tmp/$TIMESTAMP.zip /var/www/html
 /snap/bin/gcloud storage cp /tmp/$TIMESTAMP.zip gs://kirby.george.black/backups/$TIMESTAMP.zip
 rm /tmp/$TIMESTAMP.zip

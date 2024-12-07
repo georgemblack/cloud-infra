@@ -42,12 +42,16 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
   container_definitions = jsonencode([
     {
       name      = "intake"
-      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:1.1.0"
+      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:1.1.3"
       essential = true
       environment = [
         {
           name  = "VALKEY_ADDRESS"
           value = "${aws_elasticache_serverless_cache.blue_report.endpoint[0].address}:${aws_elasticache_serverless_cache.blue_report.endpoint[0].port}"
+        },
+        {
+          name  = "VALKEY_TLS_ENABLED"
+          value = "true"
         }
       ]
       cpu    = 2048

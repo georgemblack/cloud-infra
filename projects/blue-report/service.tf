@@ -32,8 +32,8 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
     cpu_architecture        = "ARM64"
   }
   network_mode       = "awsvpc"
-  cpu                = 1024
-  memory             = 2048
+  cpu                = 256
+  memory             = 512
   execution_role_arn = aws_iam_role.blue_report.arn
   container_definitions = jsonencode([
     {
@@ -51,14 +51,14 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
           value = "true"
         }
       ]
-      cpu    = 1024
-      memory = 2048
+      cpu    = 256
+      memory = 512
       logConfiguration = {
         logDriver = "awslogs"
         options = {
           "awslogs-region" = "us-west-2"
           "awslogs-group"  = aws_cloudwatch_log_stream.blue_report.name
-          "awslogs-stream-prefix" : "main"
+          "awslogs-stream-prefix" : "intake"
         }
       }
     },

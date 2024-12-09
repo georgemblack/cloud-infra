@@ -14,12 +14,13 @@ resource "aws_s3_bucket_ownership_controls" "site" {
   }
 }
 
-resource "aws_s3_bucket_website_configuration" "site" {
+resource "aws_s3_bucket_public_access_block" "site" {
   bucket = aws_s3_bucket.site.id
 
-  index_document {
-    suffix = "index.html"
-  }
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_policy" "site" {
@@ -40,39 +41,16 @@ resource "aws_s3_bucket_policy" "site" {
         Resource = "${aws_s3_bucket.site.arn}/*"
       },
       {
-        Sid       = "CloudflareReadOnly",
-        Effect    = "Allow",
-        Principal = "*",
-        Action = [
-          "s3:GetObject",
-        ],
-        Resource = "${aws_s3_bucket.site.arn}/index.html"
+        Sid    = "AllowCloudFrontServicePrincipal",
+        Effect = "Allow",
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        },
+        Action   = "s3:GetObject",
+        Resource = "${aws_s3_bucket.site.arn}/*",
         Condition = {
-          IpAddress = {
-            "aws:SourceIp" = [
-              "173.245.48.0/20",
-              "103.21.244.0/22",
-              "103.22.200.0/22",
-              "103.31.4.0/22",
-              "141.101.64.0/18",
-              "108.162.192.0/18",
-              "190.93.240.0/20",
-              "188.114.96.0/20",
-              "197.234.240.0/22",
-              "198.41.128.0/17",
-              "162.158.0.0/15",
-              "104.16.0.0/13",
-              "104.24.0.0/14",
-              "172.64.0.0/13",
-              "131.0.72.0/22",
-              "2400:cb00::/32",
-              "2606:4700::/32",
-              "2803:f800::/32",
-              "2405:b500::/32",
-              "2405:8100::/32",
-              "2a06:98c0::/29",
-              "2c0f:f248::/32",
-            ]
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.blue_report.arn
           }
         }
       },
@@ -80,7 +58,7 @@ resource "aws_s3_bucket_policy" "site" {
         Sid       = "DenyInsecureConnections",
         Effect    = "Deny",
         Principal = "*",
-        Action    = ["s3:PutObject", "s3:PutObjectAcl"],
+        Action    = ["s3:*"],
         Resource  = "arn:aws:s3:::blue-report/*",
         Condition = {
           Bool = {

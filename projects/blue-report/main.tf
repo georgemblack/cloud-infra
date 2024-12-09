@@ -1,11 +1,3 @@
-resource "aws_s3_bucket" "terraform" {
-  bucket = "blue-report-terraform"
-}
-
-resource "aws_s3_bucket" "site" {
-  bucket = "blue-report"
-}
-
 resource "aws_ecr_repository" "blue_report" {
   name                 = "blue-report"
   image_tag_mutability = "MUTABLE"
@@ -35,15 +27,20 @@ resource "aws_ecs_cluster" "blue_report" {
 resource "aws_ecs_task_definition" "blue_report_intake" {
   family                   = "blue-report-intake"
   requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = 2048
-  memory                   = 4096
-  execution_role_arn       = aws_iam_role.blue_report.arn
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "ARM64"
+  }
+  network_mode       = "awsvpc"
+  cpu                = 1024
+  memory             = 2048
+  execution_role_arn = aws_iam_role.blue_report.arn
   container_definitions = jsonencode([
     {
       name      = "intake"
-      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:1.1.3"
+      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:1.2.0"
       essential = true
+      command   = []
       environment = [
         {
           name  = "VALKEY_ADDRESS"
@@ -54,14 +51,14 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
           value = "true"
         }
       ]
-      cpu    = 2048
-      memory = 4096
+      cpu    = 1024
+      memory = 2048
       logConfiguration = {
         logDriver = "awslogs"
         options = {
           "awslogs-region" = "us-west-2"
           "awslogs-group"  = aws_cloudwatch_log_stream.blue_report.name
-          "awslogs-stream-prefix" : "intake"
+          "awslogs-stream-prefix" : "main"
         }
       }
     },
@@ -80,4 +77,6 @@ resource "aws_ecs_service" "blue_report_intake" {
     assign_public_ip = true
     security_groups  = [aws_security_group.blue_report.id]
   }
+
+  depends_on = [aws_elasticache_serverless_cache.blue_report]
 }

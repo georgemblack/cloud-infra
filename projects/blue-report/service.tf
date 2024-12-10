@@ -1,5 +1,5 @@
 locals {
-  version = "1.3.1"
+  version = "1.3.4"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -137,7 +137,7 @@ resource "aws_ecs_service" "blue_report_intake" {
 
 resource "aws_scheduler_schedule" "blue_report_aggregate" {
   name                = "blue-report-aggregate-schedule"
-  schedule_expression = "rate(10 minutes)"
+  schedule_expression = "rate(1 hours)"
 
   flexible_time_window {
     mode                      = "FLEXIBLE"

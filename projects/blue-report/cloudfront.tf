@@ -44,7 +44,7 @@ resource "aws_cloudfront_distribution" "blue_report" {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "s3-origin"
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    cache_policy_id        = aws_cloudfront_cache_policy.blue_report.id
     viewer_protocol_policy = "redirect-to-https"
   }
 
@@ -63,8 +63,8 @@ resource "aws_cloudfront_distribution" "blue_report" {
 
 resource "aws_cloudfront_cache_policy" "blue_report" {
   name        = "blue-report"
-  default_ttl = 300
-  max_ttl     = 600
+  default_ttl = 120
+  max_ttl     = 300
   min_ttl     = 60
 
   parameters_in_cache_key_and_forwarded_to_origin {

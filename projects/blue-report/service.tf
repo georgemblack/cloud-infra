@@ -1,5 +1,5 @@
 locals {
-  version = "1.2.0"
+  version = "1.3.1"
 }
 
 resource "aws_ecr_repository" "blue_report" {

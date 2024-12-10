@@ -94,6 +94,10 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
         {
           name  = "VALKEY_TLS_ENABLED"
           value = "true"
+        },
+        {
+          name  = "S3_BUCKET_NAME"
+          value = "blue-report"
         }
       ]
       cpu    = 256

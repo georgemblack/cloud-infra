@@ -71,12 +71,11 @@ resource "aws_cloudfront_cache_policy" "blue_report" {
     cookies_config {
       cookie_behavior = "none"
     }
+
     headers_config {
       header_behavior = "none"
-      headers {
-        items = ["example"]
-      }
     }
+
     query_strings_config {
       query_string_behavior = "none"
     }

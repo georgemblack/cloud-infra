@@ -22,9 +22,11 @@ resource "aws_cloudfront_origin_access_control" "blue_report" {
 
 resource "aws_cloudfront_distribution" "blue_report" {
   aliases = ["theblue.report"]
+
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.blue_report.arn
-    ssl_support_method  = "sni-only"
+    acm_certificate_arn      = aws_acm_certificate.blue_report.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 
 
@@ -57,4 +59,26 @@ resource "aws_cloudfront_distribution" "blue_report" {
   }
 
   depends_on = [aws_acm_certificate_validation.blue_report]
+}
+
+resource "aws_cloudfront_cache_policy" "blue_report" {
+  name        = "blue-report"
+  default_ttl = 300
+  max_ttl     = 600
+  min_ttl     = 60
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "none"
+      headers {
+        items = ["example"]
+      }
+    }
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+  }
 }

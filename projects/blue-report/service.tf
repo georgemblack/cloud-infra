@@ -75,8 +75,8 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
   family                   = "blue-report-aggregate"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 1024
+  memory                   = 2048
   task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
 
@@ -115,7 +115,6 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
   }
 }
 
-
 resource "aws_ecs_service" "blue_report_intake" {
   name            = "blue-report-intake"
   launch_type     = "FARGATE"
@@ -140,7 +139,6 @@ resource "aws_scheduler_schedule" "blue_report_aggregate" {
     mode                      = "FLEXIBLE"
     maximum_window_in_minutes = 2
   }
-
 
   target {
     arn      = aws_ecs_cluster.blue_report.arn

@@ -32,7 +32,7 @@ resource "aws_s3_bucket_policy" "site" {
         Sid    = "WriteOnly",
         Effect = "Allow",
         Principal = {
-          AWS = aws_iam_role.blue_report.arn
+          AWS = aws_iam_role.service.arn
         },
         Action = [
           "s3:PutObject",

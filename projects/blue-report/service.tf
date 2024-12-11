@@ -1,5 +1,5 @@
 locals {
-  version = "1.3.7"
+  version = "1.4.0"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -75,8 +75,8 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
   family                   = "blue-report-aggregate"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = 256
+  memory                   = 512
   task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
 
@@ -135,32 +135,18 @@ resource "aws_ecs_service" "blue_report_intake" {
   depends_on = [aws_elasticache_serverless_cache.blue_report]
 }
 
-resource "aws_scheduler_schedule" "blue_report_aggregate" {
-  name                = "blue-report-aggregate-schedule"
-  schedule_expression = "rate(1 hours)"
+resource "aws_ecs_service" "blue_report_aggregate" {
+  name            = "blue-report-aggregate"
+  launch_type     = "FARGATE"
+  desired_count   = 1
+  cluster         = aws_ecs_cluster.blue_report.id
+  task_definition = aws_ecs_task_definition.blue_report_aggregate.arn
 
-  flexible_time_window {
-    mode                      = "FLEXIBLE"
-    maximum_window_in_minutes = 2
+  network_configuration {
+    subnets          = [aws_subnet.blue_report_subnet_2a.id, aws_subnet.blue_report_subnet_2b.id, aws_subnet.blue_report_subnet_2c.id]
+    assign_public_ip = true
+    security_groups  = [aws_security_group.blue_report.id]
   }
 
-  target {
-    arn      = aws_ecs_cluster.blue_report.arn
-    role_arn = aws_iam_role.scheduler.arn
-
-    retry_policy {
-      maximum_retry_attempts = 0
-    }
-
-    ecs_parameters {
-      task_definition_arn = aws_ecs_task_definition.blue_report_aggregate.arn
-      launch_type         = "FARGATE"
-
-      network_configuration {
-        subnets          = [aws_subnet.blue_report_subnet_2a.id, aws_subnet.blue_report_subnet_2b.id, aws_subnet.blue_report_subnet_2c.id]
-        assign_public_ip = true
-        security_groups  = [aws_security_group.blue_report.id]
-      }
-    }
-  }
+  depends_on = [aws_elasticache_serverless_cache.blue_report]
 }

@@ -92,3 +92,29 @@ resource "aws_iam_role_policy_attachment" "execution" {
   role       = aws_iam_role.execution.name
   policy_arn = aws_iam_policy.execution.arn
 }
+
+# IAM role and policy for the EventBridge scheduler.
+# Requries permissions to execute the given ECS task.
+resource "aws_iam_role" "scheduler" {
+  name = "blue-report-scheduler"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect    = "Allow",
+        Principal = { Service = "scheduler.amazonaws.com" },
+        Action    = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+data "aws_iam_policy" "scheduler" {
+  name = "AmazonEC2ContainerServiceEventsRole"
+}
+
+resource "aws_iam_role_policy_attachment" "scheduler" {
+  role       = aws_iam_role.scheduler.name
+  policy_arn = data.aws_iam_policy.scheduler.arn
+}

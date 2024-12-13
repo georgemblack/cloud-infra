@@ -2,6 +2,65 @@ resource "aws_s3_bucket" "terraform" {
   bucket = "blue-report-terraform"
 }
 
+resource "aws_s3_bucket" "assets" {
+  bucket = "blue-report-assets"
+}
+
+resource "aws_s3_bucket_ownership_controls" "assets" {
+  bucket = aws_s3_bucket.assets.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_policy" "assets" {
+  bucket = aws_s3_bucket.assets.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "ReadAndWrite",
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_role.service.arn
+        },
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "s3:GetObject"
+        ],
+        Resource = "${aws_s3_bucket.assets.arn}/*"
+      },
+      {
+        Sid       = "DenyInsecureConnections",
+        Effect    = "Deny",
+        Principal = "*",
+        Action    = ["s3:*"],
+        Resource  = "${aws_s3_bucket.assets.arn}/*",
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      },
+      {
+        Sid       = "DenyUnencryptedObjectUploads",
+        Effect    = "Deny",
+        Principal = "*",
+        Action    = "s3:PutObject",
+        Resource  = "${aws_s3_bucket.assets.arn}/*",
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "AES256"
+          }
+        }
+      }
+    ]
+  })
+}
+
+
 resource "aws_s3_bucket" "site" {
   bucket = "blue-report"
 }

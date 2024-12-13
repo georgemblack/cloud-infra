@@ -63,8 +63,8 @@ resource "aws_cloudfront_distribution" "blue_report" {
 
 resource "aws_cloudfront_cache_policy" "blue_report" {
   name        = "blue-report"
-  default_ttl = 120
-  max_ttl     = 300
+  default_ttl = 600
+  max_ttl     = 900
   min_ttl     = 60
 
   parameters_in_cache_key_and_forwarded_to_origin {

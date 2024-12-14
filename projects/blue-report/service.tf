@@ -1,5 +1,5 @@
 locals {
-  version = "1.7.7"
+  version = "1.7.9"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -146,7 +146,6 @@ resource "aws_scheduler_schedule" "blue_report_aggregate" {
   flexible_time_window {
     mode                      = "FLEXIBLE"
     maximum_window_in_minutes = 5
-
   }
 
   target {

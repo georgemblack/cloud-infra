@@ -53,8 +53,7 @@ resource "aws_cloudfront_distribution" "blue_report" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA", "GB", "DE"]
+      restriction_type = "none"
     }
   }
 

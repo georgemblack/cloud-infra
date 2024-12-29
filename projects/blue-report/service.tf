@@ -1,5 +1,5 @@
 locals {
-  version = "1.8.1"
+  version = "1.8.2"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -34,6 +34,7 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
   network_mode             = "awsvpc"
   cpu                      = 256
   memory                   = 512
+  task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
 
   container_definitions = jsonencode([
@@ -84,7 +85,7 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
-  memory                   = 1024
+  memory                   = 512
   task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
 
@@ -113,7 +114,7 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
         }
       ]
       cpu    = 256
-      memory = 1024
+      memory = 512
       logConfiguration = {
         logDriver = "awslogs"
         options = {

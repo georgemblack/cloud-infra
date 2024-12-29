@@ -1,5 +1,5 @@
 locals {
-  version = "1.7.11"
+  version = "1.7.17"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -50,6 +50,14 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
         {
           name  = "VALKEY_TLS_ENABLED"
           value = "true"
+        },
+        {
+          name  = "S3_BUCKET_NAME"
+          value = "blue-report"
+        },
+        {
+          name  = "S3_ASSETS_BUCKET_NAME"
+          value = "blue-report-assets"
         }
       ]
       cpu    = 256

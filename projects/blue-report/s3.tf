@@ -28,9 +28,10 @@ resource "aws_s3_bucket_policy" "assets" {
         Action = [
           "s3:PutObject",
           "s3:PutObjectAcl",
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:ListBucket"
         ],
-        Resource = "${aws_s3_bucket.assets.arn}/*"
+        Resource = ["${aws_s3_bucket.assets.arn}/*", "${aws_s3_bucket.assets.arn}"]
       },
       {
         Sid       = "DenyInsecureConnections",
@@ -58,6 +59,27 @@ resource "aws_s3_bucket_policy" "assets" {
       }
     ]
   })
+}
+
+# Objects are only read for 24 hours after they are created.
+# Transition objects to Glacier IR after 2 days.
+resource "aws_s3_bucket_lifecycle_configuration" "assets" {
+  bucket = aws_s3_bucket.assets.id
+
+  rule {
+    id = "ArchiveObjects"
+
+    filter {
+      prefix = "events/"
+    }
+
+    transition {
+      days          = 2
+      storage_class = "GLACIER_IR"
+    }
+
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket" "test" {

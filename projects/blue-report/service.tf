@@ -1,5 +1,6 @@
 locals {
-  version = "1.8.5"
+  intake_version    = "1.8.6"
+  aggregate_version = "1.8.7"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -40,7 +41,7 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
   container_definitions = jsonencode([
     {
       name      = "intake"
-      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.version}"
+      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.intake_version}"
       essential = true
       command   = ["/intake"]
       environment = [
@@ -92,7 +93,7 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
   container_definitions = jsonencode([
     {
       name      = "intake"
-      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.version}"
+      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.aggregate_version}"
       essential = true
       command   = ["/aggregate"]
       environment = [

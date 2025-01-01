@@ -1,6 +1,6 @@
 locals {
-  intake_version    = "1.9.0"
-  aggregate_version = "1.10.1"
+  intake_version    = "1.10.3"
+  aggregate_version = "1.10.10"
 }
 
 resource "aws_ecr_repository" "blue_report" {

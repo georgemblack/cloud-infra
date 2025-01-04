@@ -1,6 +1,6 @@
 locals {
-  intake_version    = "1.10.3"
-  aggregate_version = "1.10.10"
+  intake_version   = "1.12.0"
+  generate_version = "1.12.0"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -81,8 +81,8 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
   }
 }
 
-resource "aws_ecs_task_definition" "blue_report_aggregate" {
-  family                   = "blue-report-aggregate"
+resource "aws_ecs_task_definition" "blue_report_generate" {
+  family                   = "blue-report-generate"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -93,9 +93,9 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
   container_definitions = jsonencode([
     {
       name      = "intake"
-      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.aggregate_version}"
+      image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.generate_version}"
       essential = true
-      command   = ["/aggregate"]
+      command   = ["/generate"]
       environment = [
         {
           name  = "VALKEY_ADDRESS"
@@ -121,7 +121,7 @@ resource "aws_ecs_task_definition" "blue_report_aggregate" {
         options = {
           "awslogs-region" = "us-west-2"
           "awslogs-group"  = aws_cloudwatch_log_stream.blue_report.name
-          "awslogs-stream-prefix" : "aggregate"
+          "awslogs-stream-prefix" : "generate"
         }
       }
     },
@@ -149,8 +149,8 @@ resource "aws_ecs_service" "blue_report_intake" {
   depends_on = [aws_elasticache_serverless_cache.blue_report]
 }
 
-resource "aws_scheduler_schedule" "blue_report_aggregate" {
-  name                = "blue-report-aggregate-schedule"
+resource "aws_scheduler_schedule" "blue_report_generate" {
+  name                = "blue-report-generate-schedule"
   schedule_expression = "rate(1 hours)"
 
   flexible_time_window {
@@ -167,7 +167,7 @@ resource "aws_scheduler_schedule" "blue_report_aggregate" {
     }
 
     ecs_parameters {
-      task_definition_arn = aws_ecs_task_definition.blue_report_aggregate.arn
+      task_definition_arn = aws_ecs_task_definition.blue_report_generate.arn
       launch_type         = "FARGATE"
 
       network_configuration {

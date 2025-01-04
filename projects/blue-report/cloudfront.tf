@@ -44,8 +44,9 @@ resource "aws_cloudfront_distribution" "blue_report" {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "s3-origin"
-    cache_policy_id        = aws_cloudfront_cache_policy.blue_report.id
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" // Managed-CachingOptimized
     viewer_protocol_policy = "redirect-to-https"
+    compress               = true
   }
 
   price_class  = "PriceClass_100"
@@ -59,25 +60,4 @@ resource "aws_cloudfront_distribution" "blue_report" {
   }
 
   depends_on = [aws_acm_certificate_validation.blue_report]
-}
-
-resource "aws_cloudfront_cache_policy" "blue_report" {
-  name        = "blue-report"
-  default_ttl = 600
-  max_ttl     = 900
-  min_ttl     = 60
-
-  parameters_in_cache_key_and_forwarded_to_origin {
-    cookies_config {
-      cookie_behavior = "none"
-    }
-
-    headers_config {
-      header_behavior = "none"
-    }
-
-    query_strings_config {
-      query_string_behavior = "none"
-    }
-  }
 }

@@ -1,6 +1,6 @@
 locals {
-  intake_version   = "1.12.0"
-  generate_version = "1.12.3"
+  intake_version   = "1.13.0"
+  generate_version = "1.13.0"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -48,6 +48,10 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
         {
           name  = "VALKEY_ADDRESS"
           value = "${aws_elasticache_serverless_cache.blue_report.endpoint[0].address}:${aws_elasticache_serverless_cache.blue_report.endpoint[0].port}"
+        },
+        {
+          name  = "VALKEY_SECONDARY_ADDRESS"
+          value = "master.blue-report.jlalhd.usw2.cache.amazonaws.com:6379"
         },
         {
           name  = "VALKEY_TLS_ENABLED"
@@ -100,6 +104,10 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
         {
           name  = "VALKEY_ADDRESS"
           value = "${aws_elasticache_serverless_cache.blue_report.endpoint[0].address}:${aws_elasticache_serverless_cache.blue_report.endpoint[0].port}"
+        },
+        {
+          name  = "VALKEY_SECONDARY_ADDRESS"
+          value = "master.blue-report.jlalhd.usw2.cache.amazonaws.com:6379"
         },
         {
           name  = "VALKEY_TLS_ENABLED"

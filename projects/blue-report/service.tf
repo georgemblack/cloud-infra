@@ -1,6 +1,6 @@
 locals {
-  intake_version   = "1.13.0"
-  generate_version = "1.13.0"
+  intake_version   = "1.13.6"
+  generate_version = "1.13.6"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -15,14 +15,6 @@ resource "aws_cloudwatch_log_group" "blue_report" {
 resource "aws_cloudwatch_log_stream" "blue_report" {
   name           = "blue-report"
   log_group_name = aws_cloudwatch_log_group.blue_report.name
-}
-
-resource "aws_elasticache_serverless_cache" "blue_report" {
-  name                 = "blue-report-cache"
-  engine               = "valkey"
-  major_engine_version = "8"
-  subnet_ids           = [aws_subnet.blue_report_subnet_2a.id, aws_subnet.blue_report_subnet_2b.id, aws_subnet.blue_report_subnet_2c.id]
-  security_group_ids   = [aws_security_group.blue_report.id]
 }
 
 resource "aws_ecs_cluster" "blue_report" {
@@ -47,10 +39,6 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
       environment = [
         {
           name  = "VALKEY_ADDRESS"
-          value = "${aws_elasticache_serverless_cache.blue_report.endpoint[0].address}:${aws_elasticache_serverless_cache.blue_report.endpoint[0].port}"
-        },
-        {
-          name  = "VALKEY_SECONDARY_ADDRESS"
           value = "master.blue-report.jlalhd.usw2.cache.amazonaws.com:6379"
         },
         {
@@ -103,10 +91,6 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
       environment = [
         {
           name  = "VALKEY_ADDRESS"
-          value = "${aws_elasticache_serverless_cache.blue_report.endpoint[0].address}:${aws_elasticache_serverless_cache.blue_report.endpoint[0].port}"
-        },
-        {
-          name  = "VALKEY_SECONDARY_ADDRESS"
           value = "master.blue-report.jlalhd.usw2.cache.amazonaws.com:6379"
         },
         {
@@ -153,8 +137,6 @@ resource "aws_ecs_service" "blue_report_intake" {
     assign_public_ip = true
     security_groups  = [aws_security_group.blue_report.id]
   }
-
-  depends_on = [aws_elasticache_serverless_cache.blue_report]
 }
 
 resource "aws_scheduler_schedule" "blue_report_generate" {

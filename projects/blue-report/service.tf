@@ -1,6 +1,6 @@
 locals {
-  intake_version   = "1.13.6"
-  generate_version = "1.13.6"
+  intake_version   = "1.15.1"
+  generate_version = "1.15.2"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -9,7 +9,8 @@ resource "aws_ecr_repository" "blue_report" {
 }
 
 resource "aws_cloudwatch_log_group" "blue_report" {
-  name = "blue-report"
+  name              = "blue-report"
+  retention_in_days = 7
 }
 
 resource "aws_cloudwatch_log_stream" "blue_report" {
@@ -84,7 +85,7 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
 
   container_definitions = jsonencode([
     {
-      name      = "intake"
+      name      = "generate"
       image     = "242201310196.dkr.ecr.us-west-2.amazonaws.com/blue-report:${local.generate_version}"
       essential = true
       command   = ["/generate"]

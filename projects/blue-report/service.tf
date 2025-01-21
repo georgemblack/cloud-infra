@@ -1,6 +1,6 @@
 locals {
-  intake_version   = "1.15.1"
-  generate_version = "1.15.2"
+  intake_version   = "1.16.5"
+  generate_version = "1.16.5"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -79,7 +79,7 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
-  memory                   = 512
+  memory                   = 1024
   task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
 
@@ -108,7 +108,7 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
         }
       ]
       cpu    = 256
-      memory = 512
+      memory = 1024
       logConfiguration = {
         logDriver = "awslogs"
         options = {

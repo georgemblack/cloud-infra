@@ -1,6 +1,6 @@
 locals {
-  intake_version   = "1.16.7"
-  generate_version = "1.16.11"
+  intake_version   = "1.18.1"
+  generate_version = "1.18.2"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -26,8 +26,8 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
   family                   = "blue-report-intake"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 512
+  memory                   = 1024
   task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
 
@@ -55,8 +55,8 @@ resource "aws_ecs_task_definition" "blue_report_intake" {
           value = "blue-report-assets"
         }
       ]
-      cpu    = 256
-      memory = 512
+      cpu    = 512
+      memory = 1024
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -78,7 +78,7 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
   family                   = "blue-report-generate"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 256
+  cpu                      = 512
   memory                   = 1024
   task_role_arn            = aws_iam_role.service.arn
   execution_role_arn       = aws_iam_role.execution.arn
@@ -107,7 +107,7 @@ resource "aws_ecs_task_definition" "blue_report_generate" {
           value = "blue-report-assets"
         }
       ]
-      cpu    = 256
+      cpu    = 512
       memory = 1024
       logConfiguration = {
         logDriver = "awslogs"
@@ -142,7 +142,7 @@ resource "aws_ecs_service" "blue_report_intake" {
 
 resource "aws_scheduler_schedule" "blue_report_generate" {
   name                = "blue-report-generate-schedule"
-  schedule_expression = "rate(1 hours)"
+  schedule_expression = "rate(10 minutes)"
 
   flexible_time_window {
     mode                      = "FLEXIBLE"

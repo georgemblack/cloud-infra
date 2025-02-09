@@ -1,6 +1,6 @@
 locals {
   intake_version   = "1.18.1"
-  generate_version = "1.18.2"
+  generate_version = "1.19.1"
 }
 
 resource "aws_ecr_repository" "blue_report" {
@@ -142,7 +142,7 @@ resource "aws_ecs_service" "blue_report_intake" {
 
 resource "aws_scheduler_schedule" "blue_report_generate" {
   name                = "blue-report-generate-schedule"
-  schedule_expression = "rate(10 minutes)"
+  schedule_expression = "rate(30 minutes)"
 
   flexible_time_window {
     mode                      = "FLEXIBLE"

@@ -29,7 +29,6 @@ resource "aws_cloudfront_distribution" "blue_report" {
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
-
   origin {
     domain_name              = aws_s3_bucket.site.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.blue_report.id

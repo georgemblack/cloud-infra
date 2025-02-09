@@ -1,5 +1,5 @@
-# IAM role and policy for Blue Report Aggregation ECS service.
-# The only permission required is access to publish to S3.
+# IAM role and policy for Blue Report Aggregation ECS services.
+# These services require S3 access to read/publish data, as well as access to AWS Secrets Manager.
 resource "aws_iam_role" "service" {
   name = "blue-report-service"
 
@@ -32,6 +32,14 @@ resource "aws_iam_policy" "service" {
         ],
         Resource = ["${aws_s3_bucket.site.arn}/*", "${aws_s3_bucket.site.arn}"]
       },
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ],
+        Resource = ["arn:aws:secretsmanager:us-west-2:242201310196:secret:blue-report/cloudflare-deploy-hook-url-GVHZlh"]
+      }
     ]
   })
 }

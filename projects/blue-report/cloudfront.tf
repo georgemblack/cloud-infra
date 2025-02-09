@@ -1,3 +1,5 @@
+# DEPRECATED – Legacy CloudFront distribution
+
 resource "aws_acm_certificate" "blue_report" {
   provider          = aws.acm_certificate
   domain_name       = "theblue.report"

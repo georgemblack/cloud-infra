@@ -62,7 +62,7 @@ resource "aws_s3_bucket_policy" "assets" {
 }
 
 # Objects are only read for 24 hours after they are created.
-# Transition objects to Glacier IR after 2 days.
+# Transition objects to Glacier IR after 7 days.
 resource "aws_s3_bucket_lifecycle_configuration" "assets" {
   bucket = aws_s3_bucket.assets.id
 
@@ -74,7 +74,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "assets" {
     }
 
     transition {
-      days          = 2
+      days          = 7
       storage_class = "GLACIER_IR"
     }
 
